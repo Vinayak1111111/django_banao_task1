@@ -11,6 +11,18 @@
     <div class="container pb-3">
         <div class="pt-3">
             <a href="{% url 'login' %}" class="btn btn-secondary mb-3">&larr; Back</a>
+
+            <div>
+                {% if user_data.user_type == "Doctor" %}
+                    <a href="{% url 'create_post' %}">Create Blog Post</a>
+                {% endif %}
+
+                <a href="{% url 'blogs_details' %}">View Blogs</a>
+
+            </div>
+
+            
+
             <div class="text-center mb-3">
                 {% if user_data.profile_picture %}
                     <img src="{{ user_data.profile_picture }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 200px;">

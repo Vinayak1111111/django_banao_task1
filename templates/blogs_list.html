@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogs List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .post-image {
+            width: 400px; /* Set fixed width */
+            height: 400px; /* Set fixed height */
+            object-fit: cover; /* Maintain aspect ratio and crop as necessary */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center mt-3 mb-4">Here are the list of blog posts:</h3>
+
+        {% if user_data %}
+            {% if user_data.user_type == "Doctor" %}
+                <a href="{% url 'create_post' %}" class="btn btn-primary mb-3">Create New Post</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="row">
+            {% for post in blog_posts %}
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            {% if user_data and user_data.user_type == "Doctor" %}
+                                {% if post.is_draft %}
+                                    <form action="{% url 'post_draft' post.id %}" method="POST" class="float-end ms-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-info btn-sm">Post It</button>
+                                    </form>
+                                    <span class="badge bg-warning">Draft</span>
+                                {% else %}
+                                    <form action="{% url 'draft_post' post.id %}" method="POST" class="float-end ms-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-warning btn-sm">Draft It</button>
+                                    </form>
+                                    <span class="badge bg-success">Posted</span>
+                                {% endif %}
+                            {% endif %}
+                            <h5 class="card-title">Title : {{ post.Title }}</h5>
+                            <p class="card-text">Category : {{ post.Category }}</p>
+                            <p class="card-text">Summary : {% if post.Summary|wordcount > 15 %}{{ post.Summary|truncatewords:15 }}...{% else %}{{ post.Summary }}{% endif %}</p>
+                            <p class="card-text">Content : {{ post.Content }}</p>
+                            {% if post.Image_url %}
+                                <img src="{{ post.Image_url }}" class="img-fluid post-image" alt="Blog Image">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>
