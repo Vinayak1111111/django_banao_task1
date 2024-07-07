@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <h3 class="text-center mt-3 mb-4">Here are the list of blog posts:</h3>
-
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">&larr; logout</a>
         {% if user_data %}
             {% if user_data.user_type == "Doctor" %}
                 <a href="{% url 'create_post' %}" class="btn btn-primary mb-3">Create New Post</a>
