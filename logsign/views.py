@@ -2,9 +2,205 @@ from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import mysql.connector
+from datetime import datetime, timedelta
+
+def backtodashboard(request):
+    user_data = request.session.get('user_data')
+    return render(request, "dashboard.html",{"user_data":user_data})
+
 
 def login(request):
     return render(request, "login.html")
+
+def view_events(request):
+    
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="Vinay@2000",
+            database="task2"
+        )
+
+        mycursor = mydb.cursor(dictionary=True)
+        
+        mycursor.execute("SELECT * FROM appointments")
+        events = mycursor.fetchall()
+
+        # print(user_type)
+        # Close cursor and database connection
+        mycursor.close()
+        mydb.close()
+
+        return render(request, 'view_events.html', {'events': events})
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return HttpResponse(f"Database error: {err}")
+    # return render(request, "view_events.html")
+
+
+def appointment_form(request):
+    if request.method == "POST":
+        doctors_name = request.POST.get('doctor_id')
+        print(doctors_name)
+        
+        # request.session['doctors_name'] = doctors_name
+    return render(request, "appointment_form.html", {"doctors_name" : doctors_name })
+
+
+def creating_appointment(request):
+    # doctors_name = request.session.get('doctors_name')
+    if request.method == "POST":
+        doctors_name = request.POST.get('doctors_name')
+        Required_speciality = request.POST.get('Required_speciality')
+        appointment_date = request.POST.get('appointment_date')
+        appointment_time = request.POST.get('appointment_time')
+        
+        end_time = (datetime.strptime(appointment_time, '%H:%M') + timedelta(minutes=45)).time()
+        print(doctors_name)
+        try:
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="Vinay@2000",
+                database="task2"
+            )
+
+            mycursor = mydb.cursor()
+            
+            
+            
+            # Check if the record already exists
+            sql_check = "SELECT * FROM appointments WHERE doctors_name = %s AND required_speciality = %s AND appointment_date = %s AND appointment_time = %s  AND end_time = %s"
+            val_check = (doctors_name, Required_speciality, appointment_date, appointment_time, end_time)
+            mycursor.execute(sql_check, val_check)
+            existing_record = mycursor.fetchone()
+
+            if existing_record:
+                # Record already exists, do not insert again
+                return HttpResponse("Event is already Schedueled")
+
+            
+            # Prepare SQL query to insert data into the database
+            sql = "INSERT INTO appointments (doctors_name, required_speciality, appointment_date, appointment_time, end_time) VALUES (%s, %s,%s, %s, %s)"
+            val = (doctors_name, Required_speciality, appointment_date, appointment_time, end_time)
+            
+            # Execute the SQL query
+            mycursor.execute(sql, val)
+            
+            # Commit the transaction
+            mydb.commit()
+            
+            # Close the cursor and database connection
+            mycursor.close()
+            mydb.close()
+            
+            
+
+            appointment_details ={
+                'doctors_name':doctors_name,'appointment_date':appointment_date, 'appointment_time':appointment_time, "end_time":end_time
+            }
+            return render(request, 'creating_appointment.html', {'appointment_details':appointment_details})
+        
+        except mysql.connector.Error as err:
+            print(f"Database error: {err}")
+            return HttpResponse(f"Database error: {err}")
+    
+    return render(request, 'appointment_form.html')
+
+
+
+
+
+def list_of_doctors(request):
+    
+    user_data = request.session.get('user_data')
+    
+    # if user_data:
+    #     user_type = user_data.get('user_type')
+
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="Vinay@2000",
+            database="task2"
+        )
+
+        mycursor = mydb.cursor(dictionary=True)
+        
+        mycursor.execute("SELECT * FROM doctor_profile")
+        doctors = mycursor.fetchall()
+
+        # print(user_type)
+        # Close cursor and database connection
+        mycursor.close()
+        mydb.close()
+
+        return render(request, 'list_of_doctors.html', {'doctors': doctors, 'user_data': user_data})
+    
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return HttpResponse(f"Database error: {err}")
+
+    # return redirect('login')
+    
+    
+    # return render(request, "list_of_doctors.html")
+
+
+def add_doctors_details(request):
+    return render(request, "add_doctors_details.html")
+
+
+def doctor_details(request):
+    user_data = request.session.get('user_data')
+    if request.method == "POST":
+        name = request.POST.get('doctor_name')
+    
+        Image_url = None
+        if request.FILES.get('Profile_Picture'):
+            doctor_image = request.FILES['Profile_Picture']
+            fs = FileSystemStorage()
+            filename = fs.save(doctor_image.name, doctor_image)
+            doctor_Image_url = fs.url(filename)
+
+        if not name:
+            return HttpResponse("Name cannot be null")
+
+        try:
+            mydb = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="Vinay@2000",
+                database="task2"
+            )
+
+            mycursor = mydb.cursor()
+            
+            # Prepare SQL query to insert data into the database
+            sql = "INSERT INTO doctor_profile (name, doctor_Image_url) VALUES (%s, %s)"
+            val = (name, doctor_Image_url)
+            
+            # Execute the SQL query
+            mycursor.execute(sql, val)
+            
+            # Commit the transaction
+            mydb.commit()
+            
+            # Close the cursor and database connection
+            mycursor.close()
+            mydb.close()
+            
+            # return redirect('dashboard')
+            return render(request, 'dashboard.html', {'user_data': user_data})
+        
+        except mysql.connector.Error as err:
+            print(f"Database error: {err}")
+            return HttpResponse(f"Database error: {err}")
+    
+    return render(request, 'add_doctors_details.html')
+
 
 def create_post(request):
     user_data = request.session.get('user_data')
@@ -32,7 +228,7 @@ def create_post(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="your_password",
+                password="Vinay@2000",
                 database="task2"
             )
 
@@ -107,7 +303,7 @@ def blogs_list(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="your_password",
+                password="Vinay@2000",
                 database="task2"
             )
 
@@ -119,9 +315,9 @@ def blogs_list(request):
                 blog_posts = mycursor.fetchall()
             elif user_type == "Patient":
                 # Fetch only published blog posts for patients
-                mycursor.execute("SELECT * FROM blogdetails WHERE is_draft = 0")
+                mycursor.execute("SELECT * FROM blogdetails WHERE is_draft == 0")
                 blog_posts = mycursor.fetchall()
-
+            print(user_type)
             # Close cursor and database connection
             mycursor.close()
             mydb.close()
@@ -141,7 +337,7 @@ def blogs_details(request):
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="your_password",
+            password="Vinay@2000",
             database="task2"
         )
 
@@ -169,7 +365,7 @@ def draft_post(request, post_id):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="your_password",
+                password="Vinay@2000",
                 database="task2"
             )
             mycursor = mydb.cursor()
@@ -200,7 +396,7 @@ def post_draft(request, post_id):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="your_password",
+                password="Vinay@2000",
                 database="task2"
             )
             mycursor = mydb.cursor()

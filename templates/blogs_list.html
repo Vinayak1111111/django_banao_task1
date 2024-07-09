@@ -10,19 +10,21 @@
             width: 400px; /* Set fixed width */
             height: 400px; /* Set fixed height */
             object-fit: cover; /* Maintain aspect ratio and crop as necessary */
+            
         }
+        
+        
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" >
         <h3 class="text-center mt-3 mb-4">Here are the list of blog posts:</h3>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">&larr; logout</a>
+        <a href="{% url 'backtodashboard' %}" class="btn btn-secondary m-3">&larr; Back</a>
         {% if user_data %}
             {% if user_data.user_type == "Doctor" %}
-                <a href="{% url 'create_post' %}" class="btn btn-primary mb-3">Create New Post</a>
+                <a href="{% url 'create_post' %}" class="btn btn-primary ">Create New Post</a>
             {% endif %}
         {% endif %}
-
         <div class="row">
             {% for post in blog_posts %}
                 <div class="col-md-6">
@@ -43,6 +45,7 @@
                                     <span class="badge bg-success">Posted</span>
                                 {% endif %}
                             {% endif %}
+                            <h5 class="card-title">{{ post.id }}</h5>
                             <h5 class="card-title">Title : {{ post.Title }}</h5>
                             <p class="card-text">Category : {{ post.Category }}</p>
                             <p class="card-text">Summary : {% if post.Summary|wordcount > 15 %}{{ post.Summary|truncatewords:15 }}...{% else %}{{ post.Summary }}{% endif %}</p>

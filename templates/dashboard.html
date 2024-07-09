@@ -12,18 +12,40 @@
         <div class="pt-3">
             <a href="{% url 'login' %}" class="btn btn-secondary mb-3">&larr; Back</a>
 
-            <div>
+            <div class="row">
                 {% if user_data.user_type == "Doctor" %}
-                    <a href="{% url 'create_post' %}">Create Blog Post</a>
+                    <div class=" col-3 text-center">
+                        <a href="{% url 'create_post' %}">Create Blog Post</a>
+                    </div>
+                    <div class=" col-3 text-center">
+                        <a href="{% url 'add_doctors_details' %}">Add Doctor Details</a>
+                    </div>
+                    <div class=" col-3 text-center">
+                        <a href="{% url 'view_events' %}">View Events</a>
+                    </div>
                 {% endif %}
+                <div class=" col-3 text-center">
+                    <a href="{% url 'blogs_details' %}">View Blogs</a>
+                </div>
+{% comment %} 
+                {% if user_data.user_type == "Patient" %}
+                    <div class="m-2 col-4 text-start" style="">
+                        <a href="{% url 'create_post' %}">See the list of Doctors</a>
+                    </div>
+                {% endif %} {% endcomment %}
 
-                <a href="{% url 'blogs_details' %}">View Blogs</a>
+
+                {% if user_data.user_type == "Patient" %}
+                    <div class="col-4 text-center" style="">
+                        <a href="{% url 'list_of_doctors' %}">Book An Appointment</a>
+                    </div>
+                {% endif %}
 
             </div>
 
             
 
-            <div class="text-center mb-3">
+            <div class="text-center mb-3 mt-5">
                 {% if user_data.profile_picture %}
                     <img src="{{ user_data.profile_picture }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 200px;">
                 {% endif %}
