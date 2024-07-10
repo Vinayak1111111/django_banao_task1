@@ -18,7 +18,7 @@ def view_events(request):
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Vinay@2000",
+            password="yourpassword",
             database="task2"
         )
 
@@ -62,7 +62,7 @@ def creating_appointment(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
 
@@ -123,7 +123,7 @@ def list_of_doctors(request):
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Vinay@2000",
+            password="yourpassword",
             database="task2"
         )
 
@@ -172,7 +172,7 @@ def doctor_details(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
 
@@ -228,7 +228,7 @@ def create_post(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
 
@@ -303,7 +303,7 @@ def blogs_list(request):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
 
@@ -337,7 +337,7 @@ def blogs_details(request):
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Vinay@2000",
+            password="yourpassword",
             database="task2"
         )
 
@@ -365,7 +365,7 @@ def draft_post(request, post_id):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
             mycursor = mydb.cursor()
@@ -396,7 +396,7 @@ def post_draft(request, post_id):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="Vinay@2000",
+                password="yourpassword",
                 database="task2"
             )
             mycursor = mydb.cursor()

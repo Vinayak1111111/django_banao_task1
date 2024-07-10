@@ -10,7 +10,7 @@
     <h1 class="text-center">Create Your Blog</h1>
 
     <div class="container">
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">&larr; Back</a>
+        <a href="{% url 'backtodashboard' %}" class="btn btn-secondary mb-3">&larr; Back</a>
         <div class="pt-3">
             <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
                 {% csrf_token %}
